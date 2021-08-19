@@ -1,0 +1,39 @@
+Vulnerability Type:
+Cross Site Scripting (XSS)
+
+
+Attack Type:
+Remote
+
+
+Product Vendor:
+IBM
+
+
+Affected Product:
+IBM Hardware Management Console V9R1 (Version 9, Release 1, Service Pack: 941)
+
+
+Browser Verified:
+Firefox
+
+
+Description:
+IBM Hardware Management Console V9R1 (Version 9, Release 1, Service Pack: 941) Login page is affected by reflected Cross-Site Scripting (XSS) vulnerability in the "j_username" web parameter of the "/hmc/j_security_check". This is due to that the Web App fails to adequately sanitize request strings of malicious JavaScript.
+
+
+Steps To Reproduce: 
+The following script should be added in the username input (j_username web parameter) of the HMC (Version 9, Release 1, Service Pack: 941) login web page and then the authentication request should be sent (by clicking on the sign in/login button):
+";</script><script>alert('XSS by IthacaLabs');</script>"
+
+
+Affected component/source code:
+j_username=";</script><script>alert('XSS by IthacaLabs');</script>"
+
+
+Impact:
+By leveraging this issue, an unauthenticated, remote attacker is able to cause arbitrary HTML and JavaScript code to be executed in a user's browser within the security context of the affected site. This issue would allow the attacker to bypass SOP (Same Origin Policy), perform Session Hijacking, and if used in conjunction with a social engineering attack it can also lead to disclosure of sensitive data, CSRF attacks and other security vulnerabilities. By exploiting this cross-site scripting vulnerability an attacker can impersonate the victim and take over the account. If the victim has administrative rights it might even lead to code execution on the machines connected to this (through HMC virtual terminal).
+
+
+Attack Vector:
+An attacker could prepare a malicious email including a specially crafted url. By clicking on the malicious url, the victim will be redirected to an attacker's malicious web page. The malicious HTML page should contain a form that mirrors the parameters of the target web application(form submission with POST method). The value of the vulnerable parameter on the attackers malicious HTML form (in this case the "username" parameter) can be set to the malicious reflected XSS payload. Also, JavaScript needs to be inserted into the malicious page to ensure that the malicious form is submitted to the vulnerable web application as soon as the page is loaded. In terms of real world exploitation, in place of a URL that contains XSS payloads injected into URL query parameters, an attacker simply sends a link to the malicious HTML form. When the victim clicks the link, their browser directs them to the attackers malicious page, at which point they are immediately redirected to the vulnerable web application where the poisoned parameter is submitted to the server, and the POST based XSS exploit is launched. This would result in stealing the session cookie of the targeted user. This attack would only be successful if the appropriate protection is not set such as SAMEORIGIN and httpOnly headers etc.
